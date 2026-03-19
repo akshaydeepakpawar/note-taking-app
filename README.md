@@ -1,3 +1,37 @@
+# 📝 Note-Taking App (Next.js + MongoDB)
+
+A full-stack note-taking application built using Next.js and MongoDB. This project was created to learn and implement modern web development concepts, including full-stack architecture, API handling, and database integration.
+
+## 🚀 Features
+
+- Create, edit, and delete notes
+- Clean and responsive user interface
+- Fast performance with Next.js
+- Backend using Next.js API routes
+- MongoDB for data storage and persistence
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js, React
+- **Backend:** Next.js API Routes
+- **Database:** MongoDB
+- **Runtime:** Node.js
+
+## 📚 What I Learned
+
+- Building a full-stack app using Next.js
+- Handling API routes and server-side logic
+- Connecting and performing CRUD operations with MongoDB
+- Managing application state and user interactions
+- Structuring a scalable project
+
+## 📦 Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/note-taking-app.git
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
