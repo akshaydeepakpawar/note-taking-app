@@ -8,6 +8,45 @@ const NotesClient = ({ initialNotes }) => {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
 
+  //this things doing for the updating the notes
+  const [editId, setEditId] = useState(null); //null=Edit node off
+
+  const handlEdit = (note) => {
+    setTitle(note.title);
+    setContent(note.content);
+    setEditId(note._id); //switched to edit mode
+  };
+
+  const updateNote = async (e) => {
+    e.preventDefault();
+    if (!title.trim() || !content.trim()) return;
+    setLoading(true);
+    try {
+      await fetch("/api/notes", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editId, title, content }),
+      });
+      //update ui
+      setNotes((prev) =>
+        prev.map((note) =>
+          note._id === editId ? { ...note, title, content } : note,
+        ),
+      );
+      toast.success("Note updated!");
+
+      //reset
+      setTitle("");
+      setContent("");
+      setEditId(null); //editmode off
+    } catch (error) {
+      console.error(error);
+      toast.error("failed to update note");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const createNote = async (e) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
@@ -46,15 +85,24 @@ const NotesClient = ({ initialNotes }) => {
     });
     //remove from UI instantly
     setNotes((prev) => prev.filter((note) => note._id !== id));
-    toast.success("Note deleted successfully!")
+    toast.success("Note deleted successfully!");
   };
 
   return (
     <div className="space-y-6">
-      <form onSubmit={createNote} className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-gray-800 text-xl font-semibold mb-4">
-          Create New Note
-        </h2>
+      <form
+        onSubmit={editId ? updateNote : createNote}
+        className="bg-white p-6 rounded-lg shadow-md"
+      >
+        {editId !== null ? (
+          <h2 className="text-gray-800 text-xl font-semibold mb-4">
+            Edit Note
+          </h2>
+        ) : (
+          <h2 className="text-gray-800 text-xl font-semibold mb-4">
+            Create New Note
+          </h2>
+        )}
         <div className="space-y-4">
           <input
             type="text"
@@ -71,13 +119,30 @@ const NotesClient = ({ initialNotes }) => {
             rows={4}
             className="w-full p-3 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
-          >
-            {loading ? "Creating..." : "Create Note"}
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
+            >
+              {loading
+                ? "Processing..."
+                : editId
+                  ? "Update Note"
+                  : "Create Note"}
+            </button>
+            {editId && (
+              <button
+                className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 disabled:opacity-50 ml-2"
+                type="button"
+                onClick={() => {
+                  setEditId(null);
+                  setTitle("");
+                  setContent("");
+                }}
+              >
+                Cancel
+              </button>
+            )}
         </div>
       </form>
       <div className="space-y-4">
@@ -92,7 +157,10 @@ const NotesClient = ({ initialNotes }) => {
               <div className="flex justify-between items-start mb-2">
                 <h3 className="text-lg font-semibold">{note.title}</h3>
                 <div className="flex gap-2">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-sm text-white px-3 py-1 rounded-lg hover:cursor-pointer font-semibold">
+                  <button
+                    className="bg-blue-500 hover:bg-blue-700 text-sm text-white px-3 py-1 rounded-lg hover:cursor-pointer font-semibold"
+                    onClick={() => handlEdit(note)}
+                  >
                     Edit
                   </button>
                   <button
