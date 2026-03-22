@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -24,18 +23,30 @@ const NotesClient = ({ initialNotes }) => {
       if (result.success) {
         // ✅ Update UI instantly
         setNotes((prev) => [result.data, ...prev]);
-        toast.success("Notes created successfully!")
+        toast.success("Note created successfully!");
         // ✅ Clear inputs
         setTitle("");
         setContent("");
       }
     } catch (error) {
       console.error("Error creating note:", error);
-      toast.error("Failed to create note")
-    }
-    finally{
+      toast.error("Failed to create note");
+    } finally {
       setLoading(false);
     }
+  };
+
+  const deleteNote = async (id) => {
+    await fetch("/api/notes", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+    //remove from UI instantly
+    setNotes((prev) => prev.filter((note) => note._id !== id));
+    toast.success("Note deleted successfully!")
   };
 
   return (
@@ -84,7 +95,11 @@ const NotesClient = ({ initialNotes }) => {
                   <button className="bg-blue-500 hover:bg-blue-700 text-sm text-white px-3 py-1 rounded-lg hover:cursor-pointer font-semibold">
                     Edit
                   </button>
-                  <button className="bg-red-500 hover:bg-red-700 text-sm text-white px-3 py-1 rounded-lg hover:cursor-pointer font-semibold">
+                  <button
+                    className="bg-red-500 hover:bg-red-700 text-sm text-white px-3 py-1 rounded-lg hover:cursor-pointer font-semibold
+                    "
+                    onClick={() => deleteNote(note._id)}
+                  >
                     Delete
                   </button>
                 </div>

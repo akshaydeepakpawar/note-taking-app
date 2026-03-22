@@ -2,6 +2,19 @@ import dbConnect from "@/lib/db";
 import Note from "@/lib/models/Note";
 import { NextResponse } from "next/server";
 
+export async function DELETE(request) {
+  try {
+    const { id } = await request.json();
+    await dbConnect();
+    await Note.deleteOne({ _id: id }); // ✅ FIX
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}
+
 export async function GET() {
   try {
     await dbConnect();
