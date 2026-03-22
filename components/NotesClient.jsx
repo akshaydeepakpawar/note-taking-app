@@ -11,6 +11,8 @@ const NotesClient = ({ initialNotes }) => {
   //this things doing for the updating the notes
   const [editId, setEditId] = useState(null); //null=Edit node off
 
+  const [deletingId, setDeletingId] = useState(null);
+
   const handlEdit = (note) => {
     setTitle(note.title);
     setContent(note.content);
@@ -76,6 +78,8 @@ const NotesClient = ({ initialNotes }) => {
   };
 
   const deleteNote = async (id) => {
+    setDeletingId(id);
+
     await fetch("/api/notes", {
       method: "DELETE",
       headers: {
@@ -83,9 +87,11 @@ const NotesClient = ({ initialNotes }) => {
       },
       body: JSON.stringify({ id }),
     });
-    //remove from UI instantly
+
     setNotes((prev) => prev.filter((note) => note._id !== id));
     toast.success("Note deleted successfully!");
+
+    setDeletingId(null);
   };
 
   return (
@@ -119,30 +125,26 @@ const NotesClient = ({ initialNotes }) => {
             rows={4}
             className="w-full p-3 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
+          >
+            {loading ? "Processing..." : editId ? "Update Note" : "Create Note"}
+          </button>
+          {editId && (
             <button
-              type="submit"
-              disabled={loading}
-              className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50"
+              className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 disabled:opacity-50 ml-2"
+              type="button"
+              onClick={() => {
+                setEditId(null);
+                setTitle("");
+                setContent("");
+              }}
             >
-              {loading
-                ? "Processing..."
-                : editId
-                  ? "Update Note"
-                  : "Create Note"}
+              Cancel
             </button>
-            {editId && (
-              <button
-                className="bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 disabled:opacity-50 ml-2"
-                type="button"
-                onClick={() => {
-                  setEditId(null);
-                  setTitle("");
-                  setContent("");
-                }}
-              >
-                Cancel
-              </button>
-            )}
+          )}
         </div>
       </form>
       <div className="space-y-4">
@@ -164,11 +166,11 @@ const NotesClient = ({ initialNotes }) => {
                     Edit
                   </button>
                   <button
-                    className="bg-red-500 hover:bg-red-700 text-sm text-white px-3 py-1 rounded-lg hover:cursor-pointer font-semibold
-                    "
+                    className="bg-red-500 hover:bg-red-700 text-sm text-white px-3 py-1 rounded-lg font-semibold disabled:opacity-50"
                     onClick={() => deleteNote(note._id)}
+                    disabled={deletingId === note._id}
                   >
-                    Delete
+                    {deletingId === note._id ? "Deleting..." : "Delete"}
                   </button>
                 </div>
               </div>
