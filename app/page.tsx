@@ -2,6 +2,8 @@ import dbConnect from "@/lib/db"
 import NotesClient from "@/components/NotesClient"
 import Note from "@/lib/models/Note"
 
+export const dynamic = "force-dynamic"; //for deployment purpose
+
 async function getNotes(){
   await dbConnect();
   const notes=await Note.find({}).sort({createdAt:-1}).lean();
