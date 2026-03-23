@@ -160,15 +160,16 @@ const NotesClient = ({ initialNotes }) => {
                 <h3 className="text-lg font-semibold">{note.title}</h3>
                 <div className="flex gap-2">
                   <button
-                    className="bg-blue-500 hover:bg-blue-700 text-sm text-white px-3 py-1 rounded-lg hover:cursor-pointer font-semibold"
+                    className="bg-blue-500 hover:bg-blue-700 text-sm text-white px-3 py-1 rounded-lg font-semibold disabled:opacity-50"
                     onClick={() => handlEdit(note)}
+                    disabled={editId === note._id}
                   >
                     Edit
                   </button>
                   <button
                     className="bg-red-500 hover:bg-red-700 text-sm text-white px-3 py-1 rounded-lg font-semibold disabled:opacity-50"
                     onClick={() => deleteNote(note._id)}
-                    disabled={deletingId === note._id}
+                    disabled={editId === note._id || deletingId === note._id}
                   >
                     {deletingId === note._id ? "Deleting..." : "Delete"}
                   </button>
